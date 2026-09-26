@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aura-white"
+version = "2.0.0"
+description = "Aura White - single-image 3D generation with a sharp textured (UV + normal map) studio pipeline. Pure PyTorch core, no compiled extensions required."
+readme = "README.md"
+license = { text = "MIT" }
+# Deliberately NO upper bounds anywhere: a new Python / NumPy / PyTorch release must never make pip refuse to install.
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.21",
+    "Pillow>=9.0",
+    "torch>=2.0",
+]
+
+[project.optional-dependencies]
+# safetensors: safe, fast, half-size weights. Ships abi3 wheels, so it installs on new Pythons too.
+recommended = ["safetensors>=0.4"]
+# rembg: automatic background removal for photos with busy backgrounds (optional, may lag behind new Pythons).
+bg = ["rembg"]
+scipy = ["scipy"]
+# Texturing engine accelerators. All optional: every one of them has a built-in pure NumPy/PyTorch fallback.
+studio = ["scipy", "fast-simplification", "xatlas", "safetensors>=0.4"]
+# Heavy model back-ends for `aura-white studio` (Zero123++, InstantMesh, Hunyuan3D-2.1 shape).
+models = ["diffusers>=0.27", "transformers>=4.40", "huggingface_hub", "accelerate", "einops", "omegaconf", "pyyaml",
+          "pytorch-lightning", "opencv-python-headless"]
+test = ["pytest", "safetensors>=0.4", "trimesh", "scipy", "fast-simplification"]
+
+[project.scripts]
+aura-white = "aura_white.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["aura_white*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
